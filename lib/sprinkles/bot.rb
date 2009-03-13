@@ -8,6 +8,7 @@ module Sprinkles
       options.each do |option, value|
         instance_variable_set("@#{option}", value)
       end
+      @processors = []
       @request_processors = []
       @response_processors = []
       @hostname = Socket.gethostname
@@ -55,7 +56,7 @@ module Sprinkles
         Origin.new(prefix)
       end
 
-      @request_processors.each do |processor|
+      (@request_processors + @processors).each do |processor|
         begin
           processor.call(self, origin, command, parameters)
         rescue => e
@@ -65,7 +66,7 @@ module Sprinkles
     end
 
     def process_response(origin, command, parameters)
-      @response_processors.each do |processor|
+      (@response_processors + @processors).each do |processor|
         begin
           processor.call(self, origin, command, parameters)
         rescue => e
@@ -85,6 +86,10 @@ module Sprinkles
 
     def add_response_processor(processor = nil, &block)
       @response_processors << (processor || block)
+    end
+
+    def add_processor(processor = nil, &block)
+      @processors << (processor || block)
     end
 
     def connect
@@ -138,8 +143,7 @@ if File.expand_path($0) == File.expand_path(__FILE__)
   bot.add_request_processor do |bot, origin, command, parameters|
     puts "[#{Time.now}] #{origin} > [#{command}] #{parameters}"
   end
-  bot.add_request_processor(Sprinkles::Processor::Logger.new)
-  bot.add_response_processor(Sprinkles::Processor::Logger.new)
+  bot.add_processor(Sprinkles::Processor::Logger.new)
   bot.add_request_processor(Sprinkles::Processor::Greeter.new)
   bot.add_request_processor(AcceptInvitations.new)
   bot.start
