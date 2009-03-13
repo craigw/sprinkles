@@ -11,7 +11,14 @@ module Sprinkles
     end
 
     def to_s
-      nickname || @prefix || "-server-"
+      case
+      when nickname != ""
+        nickname
+      when @prefix
+        @prefix
+      else
+        "-unknown-"
+      end
     end
   end
 end
