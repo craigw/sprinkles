@@ -123,10 +123,10 @@ module Sprinkles
 end
 
 if File.expand_path($0) == File.expand_path(__FILE__)
-  require File.dirname(__FILE__) + '/processor/ping'
-  require File.dirname(__FILE__) + '/processor/logger'
-  require File.dirname(__FILE__) + '/processor/greeter'
-  require File.dirname(__FILE__) + '/origin'
+  require File.dirname(__FILE__) + '/../../contrib/processor/ping'
+  require File.dirname(__FILE__) + '/../../contrib/processor/logger'
+  require File.dirname(__FILE__) + '/../../contrib/processor/greeter'
+  require File.dirname(__FILE__) + '/../../contrib/origin'
 
   class AcceptInvitations
     def call(bot, origin, command, parameters)

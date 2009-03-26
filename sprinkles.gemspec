@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email = %Q(craig@barkingiguana.com)
   s.files = Dir[File.dirname(__FILE__) + "/lib/**/*.rb"]
   s.has_rdoc = true
-  s.homepage = %q{http://barkingiguana.com/~craig/sprinkles}
+  s.homepage = %Q(http://barkingiguana.com/~craig/sprinkles)
   s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.summary = %Q(A minimal framework for developing IRC bots)
