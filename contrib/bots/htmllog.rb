@@ -42,6 +42,7 @@ class HtmlLogger
       logfile(bot.server[:hostname], room, now) do |xml|
         id = message_id(tai64n(now), origin.nickname, room, message)
         xml.div(:id => id, :class => "message") {
+          xml.a('#', :class => "bookmark", :href => '#' + id)
           xml.span(now.strftime('%H:%M:%S'), :class => "time")
           xml.span(origin.nickname, :class => "nickname")
           message.gsub! /&/, '&amp;'
@@ -91,6 +92,8 @@ class HtmlLogger
           xml << '.nickname { color: #6633cc; }'
           xml << '.time { color: #999999; }'
           xml << '.message:hover { color: black; background-color: #cccc66; }'
+          xml << '.bookmark { color: white; }'
+          xml << '.message:hover .bookmark { color: black; }'
         }
       }
       xml.body {
