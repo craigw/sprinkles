@@ -90,7 +90,7 @@ class HtmlLogger
         xml.style(:type => "text/css") {
           xml << '.nickname { color: #6633cc; }'
           xml << '.time { color: #999999; }'
-          xml << '.message:hover .time { color: black; background-color: #cccc66; }'
+          xml << '.message:hover { color: black; background-color: #cccc66; }'
         }
       }
       xml.body {
