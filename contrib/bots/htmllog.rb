@@ -27,11 +27,11 @@ class HtmlLogger
   def url_linkers
     [
       [ /([\w]+):\/\/([^\s]+)/, '<a href="\1://\2">\1://\2</a>' ],
-      [ /(www\.[^\s]+)/i, '<a href="http://\1">\1</a>' ],
-      [ /(ftp\.[^\s]+)/i, '<a href="ftp://\1">\1</a>' ],
-      [ /(irc\.[^\s]+)/i, '<a href="irc://\1">\1</a>' ],
-      [ /(irc\.[^\s]+)/i, '<a href="irc://\1">\1</a>' ],
-      [ /([^\s]+)@([^\s]+)/, '<a href="mailto:\1@\2">\1@\2</a>' ]
+      [ /\s(www\.[^\s]+)/i, '<a href="http://\1">\1</a>' ],
+      [ /\s(ftp\.[^\s]+)/i, '<a href="ftp://\1">\1</a>' ],
+      [ /\s(irc\.[^\s]+)/i, '<a href="irc://\1">\1</a>' ],
+      [ /\s(irc\.[^\s]+)/i, '<a href="irc://\1">\1</a>' ],
+      [ /\s([^\s]+)@([^\s]+)/, '<a href="mailto:\1@\2">\1@\2</a>' ]
     ]
   end
 
