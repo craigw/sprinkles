@@ -2,7 +2,7 @@ require 'socket'
 
 module Sprinkles
   class Bot
-    attr_accessor :nickname
+    attr_accessor :nickname, :server
 
     def initialize(options = {})
       options.each do |option, value|
@@ -12,13 +12,15 @@ module Sprinkles
       @request_processors = []
       @response_processors = []
       @hostname = Socket.gethostname
-      @server ||= { :hostname => "localhost", :port => 6667 }
+      @server ||= { :hostname => options[:hostname] || "localhost", :port => options[:port] || 6667 }
       add_request_processor(Sprinkles::Processor::Ping.new)
+      @rooms = options[:rooms] || []
     end
 
     def start
       connect
       authenticate
+      @rooms.each { |room| join_room room }
       loop do
         @buffer ||= ""
         @buffer += @socket.recv(1024)
@@ -60,7 +62,8 @@ module Sprinkles
         begin
           processor.call(self, origin, command, parameters)
         rescue => e
-          puts e.message
+          puts e.class.name + ": " + e.message
+          puts e.backtrace.join("\n")
         end
       end
     end
@@ -70,10 +73,11 @@ module Sprinkles
         begin
           processor.call(self, origin, command, parameters)
         rescue => e
-          puts e.message
+          puts e.class.name + ": " + e.message
+          puts e.backtrace.join("\n")
         end
       end
-      @socket.send("#{command} :#{parameters}\r\n", 0)
+      @socket.print("#{command} :#{parameters}\r\n")
     end
 
     def origin
@@ -123,10 +127,10 @@ module Sprinkles
 end
 
 if File.expand_path($0) == File.expand_path(__FILE__)
-  require File.dirname(__FILE__) + '/../../contrib/processor/ping'
+  require File.dirname(__FILE__) + '/processor/ping'
   require File.dirname(__FILE__) + '/../../contrib/processor/logger'
   require File.dirname(__FILE__) + '/../../contrib/processor/greeter'
-  require File.dirname(__FILE__) + '/../../contrib/origin'
+  require File.dirname(__FILE__) + '/origin'
 
   class AcceptInvitations
     def call(bot, origin, command, parameters)
