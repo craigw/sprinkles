@@ -31,7 +31,7 @@ module Sprinkles
       def call(bot, origin, command, parameters)
         if command =~ /^PRIVMSG (\#+[a-zA-Z0-9\_\-\.]+)$/
           @semaphore.synchronize {
-            @messages << "#{timestamp} #{server[:hostname]} #{origin} #{command} #{parameters}"
+            @messages << "#{timestamp} #{bot.server[:hostname]} #{origin} #{command} #{parameters}"
           }
         end
       end
