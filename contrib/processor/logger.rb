@@ -1,17 +1,38 @@
+require 'thread'
 module Sprinkles
   module Processor
     class Logger
-      attr_reader :directory, :log_pattern
+      attr_reader :directory, :log_pattern, :messages
 
       def initialize(log_pattern = "%Y%m%d.log", directory = Dir.pwd)
+        @semaphore = Mutex.new
         @log_pattern = log_pattern
         @directory = directory
+        @messages = []
+        @logthread = Thread.new(@semaphore, self) do |semaphore, bot|
+          loop do
+            queue = bot.messages
+            if queue.any?
+              semaphore.synchronize {
+                messages = []
+                while message = queue.shift
+                  messages << message
+                end
+                bot.log { |file|
+                  messages.each { |message| file.puts(message) }
+                }
+              }
+            end
+            sleep 60
+          end
+        end
       end
 
       def call(bot, origin, command, parameters)
         if command =~ /^PRIVMSG (\#+[a-zA-Z0-9\_\-\.]+)$/
-          room = command.scan(/^PRIVMSG (\#+[a-zA-Z0-9\_\-\.]+)$/)[0][0]
-          logfile { |log| log.puts(message) }
+          @semaphore.synchronize {
+            @messages << "#{timestamp} #{origin} #{command} #{parameters}"
+          }
         end
       end
 
@@ -25,10 +46,13 @@ module Sprinkles
         "@40000000%08x%08x" % [ seconds + fuzz, nanoseconds ]
       end
 
-      def logfile(&block)
-        filename = File.join(directory, "#{Time.now.strftime(log_pattern)}")
+      def logfile
+        File.join(directory, "#{Time.now.strftime(log_pattern)}")
+      end
+
+      def log(&block)
         # TODO: I should really hold the file open until it's time to rotate.
-        File.open(logfile, "a+") { |f| f.sync = true; yield f }
+        File.open(logfile, "a+") { |f| yield f }
       end
     end
   end
