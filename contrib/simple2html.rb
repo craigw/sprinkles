@@ -49,7 +49,7 @@ end
 
 @logs.each_pair do |logfile, info|
   messages = info[:messages]
-  date = File.basename(logfile.split(/\//)[-1], '.log')
+  date = File.basename(logfile.split(/\//)[-1], '.html')
   title = "irc://#{info[:hostname]}/#{info[:channel]} @ #{date}"
   if !File.exists?(File.dirname(logfile))
     File.makedirs(File.dirname(logfile))
