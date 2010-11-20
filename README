@@ -1,0 +1,32 @@
+Name: Sprinkles
+	A simple IRC Bot library written in ruby
+	
+How to make a bot:
+
+	require 'sprinkles'
+	require 'processor/logger'
+
+	options = {
+	  :username => mybot,
+	  :fullname => mybot,
+	  :nickname => mybot,
+	  :hostname => myirc.com,
+	  :rooms => ['#mychannel']
+	}
+
+	bot = Sprinkles::Bot.new(options)
+	bot.add_processor(Sprinkles::Processor::Logger.new)
+	bot.start
+	
+You can see more examples in ./contrib
+
+Options for the bot:
+	:username - username (Required)
+	:fullname - fullname (Required)
+	:nickname - nickname (Required)
+	:hostname - irc server's hostname (Required)
+	:rooms - an array of channels to connect to on startup (Required)
+	:password - a password to be provided to your irc server (Optional)
+	:ssl - a boolean that tells your bot to use SSL to connect (Optional, default = false)
+	:ssl_verify - a boolean that tells the SSL library whether to do SSL certificate verification (Optional, default = true)
+
