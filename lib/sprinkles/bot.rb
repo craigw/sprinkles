@@ -123,7 +123,7 @@ module Sprinkles
     end
 
     def authenticate
-      unless @token.nil?
+      unless @password.nil?
         send_message "PASS #{@password}"
       end
       send_message "NICK #{@nickname}"
