@@ -15,6 +15,9 @@ module Sprinkles
       @server ||= { :hostname => options[:hostname] || "localhost", :port => options[:port] || 6667 }
       add_request_processor(Sprinkles::Processor::Ping.new)
       @rooms = options[:rooms] || []
+      @password = options[:password] || nil
+      @ssl = options[:ssl] || false
+      @ssl_verify = options[:ssl_verify] || true
     end
 
     def start
@@ -23,7 +26,11 @@ module Sprinkles
       @rooms.each { |room| join_room room }
       loop do
         @buffer ||= ""
-        @buffer += @socket.recv(1024)
+        if @ssl
+          @buffer += @socket.gets
+        else
+          @buffer += @socket.recv(1024)
+        end
         messages = @buffer.split(/\r|\n/).collect { |s| s != "" && !s.nil? ? s : nil }.compact
         if messages.any?
           last_character = @buffer[-1..-1]
@@ -98,6 +105,15 @@ module Sprinkles
 
     def connect
       @socket = TCPSocket.new(@server[:hostname], @server[:port])
+      if @ssl
+        @ssl_context = OpenSSL::SSL::SSLContext.new()
+        unless @ssl_verify
+          @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        @socket = OpenSSL::SSL::SSLSocket.new(@socket, @ssl_context)
+        @socket.sync_close = true
+        @socket.connect
+      end
       trap("INT") do
         @socket.close
       end
@@ -107,6 +123,9 @@ module Sprinkles
     end
 
     def authenticate
+      unless @password.nil?
+        send_message "PASS #{@password}"
+      end
       send_message "NICK #{@nickname}"
       send_message "USER #{@username} #{@hostname} bla :#{@fullname}"
     end
